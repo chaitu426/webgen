@@ -48,15 +48,53 @@ export const register = async (req: Request, res: Response) => {
                 { userId: newUser._id },
                 config.jwtSecret as string,
                 { expiresIn: '1d' }
-              );
-              
+            );
+
 
             console.log("User registered successfully");
-            res.status(201).json({ message: "User registered successfully", user: newUser ,token: token});
+            res.status(201).json({ message: "User registered successfully", user: newUser, token: token });
         }
 
     } catch (error) {
         console.error("Error during registration:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
+export const login = async (req: Request, res: Response) => {
+    try {
+        // destructure email and password from the request body
+        const { email, password } = req.body;
+
+        // Validate the input
+        if (!email || !password) {
+            res.status(400).json({ message: "Missing required fields" });
+        }
+
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+        } else {
+
+            // Compare the password with the hashed password in the database
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+
+            // If the password is invalid, return an error
+            if (!isPasswordValid) {
+                res.status(401).json({ message: "Invalid credentials" });
+            } else {
+                // Generate a JWT token
+                const token = jwt.sign(
+                    { userId: user?._id },
+                    config.jwtSecret as string,
+                    { expiresIn: '1d' }
+                );
+
+                res.status(200).json({ message: "Login successful", user, token });
+            };
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
