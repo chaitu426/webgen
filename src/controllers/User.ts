@@ -93,8 +93,27 @@ export const login = async (req: Request, res: Response) => {
 
                 res.status(200).json({ message: "Login successful", user, token });
             };
-        }
+        };
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
-    }
+    };
+};
+
+export const getProfile = async (req: Request, res: Response) => {
+    try {
+        // Get the user ID from the request parameters
+        const userId = req.params.userId;
+
+        // Find the user by ID
+        const user = await User.findById(userId).select('-password'); // Exclude password from the response
+
+        // If user not found, return an error
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+        } else {
+            res.status(200).json({ user });
+        };
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    };
 };
