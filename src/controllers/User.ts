@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import config from "../config/config"
 
 
+
 export const register = async (req: Request, res: Response) => {
     try {
         const { username, email, password } = req.body;
