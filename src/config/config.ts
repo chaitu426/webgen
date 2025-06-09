@@ -6,6 +6,8 @@ const config ={
     geminiApiKey: process.env.AI_API_KEY|| '',
     nebiusApiKey: process.env.NEBIUS_API_KEY || '',
     openRouterApiKey: process.env.OPENROUTER_API_KEY || '',
+    dburl: process.env.MONGODB_URL,
+    jwtSecret: process.env.JWT_SECRET,
 };
 
 export default Object.freeze(config);
