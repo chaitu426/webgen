@@ -123,6 +123,31 @@ export const Enhance = async (req: Request, res: Response) => {
         // Ensure response isn't sent multiple times
         if (!res.headersSent) {
             res.status(500).json({ message: "Internal server error" });
+        };
+    };
+};
+
+
+export const project = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id;
+
+        if (!id) {
+            res.status(400).json({ message: "Project ID is required" });
+            
+        }
+        const project = await AigenModel.findById(id);
+        if (!project) {
+            res.status(404).json({ message: "Project not found" });
+        }
+        res.status(200).json({
+            message: "Project retrieved successfully",
+            data: project
+        });
+
+    } catch (error) {
+        if (!res.headersSent) {
+            res.status(500).json({ message: "Internal server error" });
         }
     }
 }
