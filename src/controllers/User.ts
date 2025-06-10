@@ -3,6 +3,7 @@ import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 import config from "../config/config"
+import AigenModel from '../models/Aigen';
 
 
 
@@ -103,11 +104,14 @@ export const getProfile = async (req: Request, res: Response) => {
         // Find the user by ID
         const user = await User.findById(userId).select('-password'); // Exclude password from the response
 
+        const generations = await AigenModel.find({
+            createdBy: userId
+        })
         // If user not found, return an error
         if (!user) {
             res.status(404).json({ message: "User not found" });
         } else {
-            res.status(200).json({ user });
+            res.status(200).json({ user, projects:generations});
         };
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
