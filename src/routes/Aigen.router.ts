@@ -1,10 +1,12 @@
 import express from "express";
-import { Generate } from "../controllers/Aigen";
+import { Generate,Enhance } from "../controllers/Aigen";
 
 const AigenRouter = express.Router();
 
 
 AigenRouter.post("/generate", Generate);
+
+AigenRouter.put("/enhance/:id", Enhance);
 
 
 

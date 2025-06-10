@@ -50,3 +50,79 @@ export const Generate = async (req: Request, res: Response) => {
         }
     }
 };
+
+
+export const Enhance = async (req: Request, res: Response) => {
+    try {
+        const Id = req.params.id;
+        const { enhancePrompt } = req.body;
+        if (!enhancePrompt) {
+            res.status(400).json({ message: "Enhance prompt is required" });
+            return;
+        }
+        const user = req.user;
+        if (!user || (typeof user !== "object" || !("userId" in user))) {
+            res.status(401).json({ message: "Unauthorized" });
+        }
+
+        // Find the existing AigenModel entry
+        const existingAigen = await AigenModel.findById(Id);
+        if (!existingAigen) {
+            res.status(404).json({ message: "AigenModel not found" });
+            return;
+        }
+        
+        // Combine context: previous code + new enhance prompt
+        const combinedPrompt = `
+        Enhance the following code based on the instruction below:
+
+        ---Instruction---
+        ${enhancePrompt}
+
+        ---Previous Code---
+        ${existingAigen.code}
+        `;
+
+        // Refine and generate AI response
+        const refined_code = await Aigen(combinedPrompt);
+        const { explanation, code } = splitExplanationAndCode(refined_code);
+
+        // Append current version to refinement history
+        const refinementHistory = existingAigen.refinementHistory || [];
+        refinementHistory.push({
+            code: existingAigen.code,
+            version: existingAigen.version,
+            refinedAt: new Date(),
+        });
+
+        // Update the existing AigenModel entry
+        const updatedAigen = await AigenModel.findByIdAndUpdate(
+             Id
+            ,{
+            code:code,
+            description: explanation,
+            version: (parseFloat(existingAigen.version) + 0.1).toFixed(1),
+            refinementHistory,
+        }
+        
+        , {
+            new: true, // Return the updated document
+            runValidators: true // Ensure validation rules are applied
+        });
+        // Respond with the updated data
+        res.status(200).json({
+            message: "Enhanced successfully",
+            explanation,
+            code,
+            data: updatedAigen
+        }
+    )
+
+
+    } catch (error) {
+        // Ensure response isn't sent multiple times
+        if (!res.headersSent) {
+            res.status(500).json({ message: "Internal server error" });
+        }
+    }
+}

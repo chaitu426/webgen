@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { version } from "os";
 
 
 const aigenSchema = new mongoose.Schema({
@@ -14,9 +15,8 @@ const aigenSchema = new mongoose.Schema({
         required: true
          },
     version: { type: String,
-         required: true,
-        trim: true,
-        maxlength: 20
+        required: true,
+        trim: true
          },
     description: { 
         type: String,
@@ -25,7 +25,7 @@ const aigenSchema = new mongoose.Schema({
     refinementHistory: [
       {
         code: String,
-        reason: String,
+        version: String,
         refinedAt: { type: Date, default: Date.now }
       }
     ],
