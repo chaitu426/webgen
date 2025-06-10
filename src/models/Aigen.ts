@@ -20,8 +20,7 @@ const aigenSchema = new mongoose.Schema({
          },
     description: { 
         type: String,
-        trim: true,
-        maxlength: 500
+        trim: true
          },
     refinementHistory: [
       {
@@ -40,5 +39,5 @@ const aigenSchema = new mongoose.Schema({
     versionKey: false
   });
   
-const Aigen = mongoose.model("Aigen", aigenSchema);
-export default Aigen;
+const AigenModel = mongoose.model("AigenModel", aigenSchema);
+export default AigenModel;

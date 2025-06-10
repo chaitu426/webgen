@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 import config from "../config/config";
-import { query_prompt, system_prompt } from "../config/prompt";
+import {system_prompt} from "../config/prompt";
 
-const Aigen = async()=>{
+const Aigen = async(prompt:string)=>{
     try {
         const client = new OpenAI({
             baseURL: 'https://api.studio.nebius.com/v1/', // ✅ Correct baseURL
@@ -12,14 +12,14 @@ const Aigen = async()=>{
         const completion = await client.chat.completions.create({
             model: "deepseek-ai/DeepSeek-R1-0528",
             max_tokens: 20000,
-            temperature: 0.7,
+            temperature: 0.6,
             messages: [
                 {
                     role: "system",
                     content: system_prompt,
                 }, {
                     role: "user",
-                    content: query_prompt,
+                    content: prompt,
                 }
             ],
         });

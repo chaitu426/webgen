@@ -40,7 +40,6 @@ export const register = async (req: Request, res: Response) => {
 
         // If user creation failed
         if (!newUser) {
-            console.error("User registration failed");
             res.status(500).json({ message: "User registration failed" });
         } else {
 
@@ -50,14 +49,10 @@ export const register = async (req: Request, res: Response) => {
                 config.jwtSecret as string,
                 { expiresIn: '1d' }
             );
-
-
-            console.log("User registered successfully");
             res.status(201).json({ message: "User registered successfully", user: newUser, token: token });
         }
 
     } catch (error) {
-        console.error("Error during registration:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
