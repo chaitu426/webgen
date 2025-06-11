@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 import config from "../config/config"
 import AigenModel from '../models/Aigen';
+import axios from 'axios';
 
 
 
@@ -117,3 +118,4 @@ export const getProfile = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error" });
     };
 };
+

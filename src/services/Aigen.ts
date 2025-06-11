@@ -12,7 +12,7 @@ const Aigen = async(prompt:string)=>{
         const completion = await client.chat.completions.create({
             model: "deepseek-ai/DeepSeek-R1-0528",
             max_tokens: 20000,
-            temperature: 0.6,
+            temperature: 0.5,
             messages: [
                 {
                     role: "system",

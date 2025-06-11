@@ -8,6 +8,7 @@ const config ={
     openRouterApiKey: process.env.OPENROUTER_API_KEY || '',
     dburl: process.env.MONGODB_URL,
     jwtSecret: process.env.JWT_SECRET,
+    vercelToken: process.env.VERCEL_TOKEN || '',
 };
 
 export default Object.freeze(config);

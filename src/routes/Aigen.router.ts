@@ -1,5 +1,5 @@
 import express from "express";
-import { Generate,Enhance, project, deleteProject } from "../controllers/Aigen";
+import { Generate,Enhance, project, deleteProject} from "../controllers/Aigen";
 
 const AigenRouter = express.Router();
 
@@ -11,6 +11,9 @@ AigenRouter.put("/enhance/:id", Enhance);
 AigenRouter.get("/project/:id", project);
 
 AigenRouter.delete("/delete/:id", deleteProject );
+
+
+  
 
 
 

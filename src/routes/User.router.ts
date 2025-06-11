@@ -12,4 +12,6 @@ UserRouter.post("/login", login);
 
 UserRouter.get("/profile/:userId", AuthMiddleware , getProfile);
 
+
+
 export default UserRouter;

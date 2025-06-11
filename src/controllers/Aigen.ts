@@ -20,9 +20,9 @@ export const Generate = async (req: Request, res: Response) => {
         }
 
         // Refine and generate AI response
-        const refined_prompt = await refine(prompt);
+        // const refined_prompt = await refine(prompt);
 
-        const aiResponse = await Aigen(refined_prompt);
+        const aiResponse = await Aigen(prompt);
         const { explanation, code } = splitExplanationAndCode(aiResponse);
 
         // Save generated data to the database
@@ -37,7 +37,7 @@ export const Generate = async (req: Request, res: Response) => {
         // Respond once, after everything is done
         res.status(201).json({
             message: "Generated and saved successfully",
-            refined_prompt,
+            refined_prompt:"null",
             explanation,
             code,
             data: newAigen
@@ -195,4 +195,5 @@ export const deleteProject = async (req: Request, res: Response) => {
             res.status(500).json({ message: "Internal server error" });
         };
     };
-}
+};
+
