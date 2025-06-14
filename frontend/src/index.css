@@ -1,1 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
 @import "tailwindcss";
+
+
+body {
+  background-color: #0A0A0A;
+}
+
+@theme inline {
+  --shadow-input:
+    0px 2px 3px -1px rgba(0, 0, 0, 0.1),
+    0px 1px 0px 0px rgba(25, 28, 33, 0.02),
+    0px 0px 0px 1px rgba(25, 28, 33, 0.08);
+}
+
+@theme inline {
+  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
+ 
+  @keyframes scroll {
+    to {
+      transform: translate(calc(-50% - 0.5rem));
+    }
+  }
+}
+
+
+.font-jetbrains {
+  font-family: 'JetBrains Mono', monospace;
+}
