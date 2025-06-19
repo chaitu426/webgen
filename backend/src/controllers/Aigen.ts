@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import refine from "../services/refine";
 import Aigen from "../services/Aigen";
 import splitExplanationAndCode from "../services/dataparse";
 import AigenModel from "../models/Aigen";
