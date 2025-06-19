@@ -6,7 +6,9 @@ import { FaGithub } from "react-icons/fa";
 import { IoMdAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { LoaderCircle } from "lucide-react";
+import { useAuthStore } from "../store/authStore";
+import { useWorkStore } from "../store/workStore";
+import { toast } from "react-toastify";
 
 
 const suggestions = [
@@ -18,16 +20,26 @@ const suggestions = [
 
 export function BackgroundBeamsDemo() {
     const [input, setInput] = useState("");
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const user = useAuthStore((state) => state.user);
+    
+    
+    
+
+    const greating = user ? `Welcome ${user.user.username}` : "Welcome to WebGen";
 
     const handleSend = () => {
-        setLoading(true);
-
-        setTimeout(() => {
-            navigate("/workspace");
-        }, 2000); // simulate loading delay
-    };
+        
+        if (!user) {
+          toast.error("Login to generate with WebGen");
+          navigate("/login");
+          return;
+        }
+      
+        useWorkStore.getState().setPendingPrompt(input); // store prompt in zustand
+        navigate("/workspace");
+      };
+      
 
 
     return (
@@ -38,7 +50,7 @@ export function BackgroundBeamsDemo() {
             {/* Foreground content */}
             <div className="relative z-10 flex flex-col antialiased">
                 <div className="max-w-2xl mt-30 mx-30 p-4">
-                    <TextGenerateEffect words={"Welcome Chaitu"} />
+                    <TextGenerateEffect words={greating} />
                     <h1 className="text-xl md:text-5xl bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-600 text-left font-semibold">
                         Build amazing websites at <Cover>warp speed</Cover>
                     </h1>
@@ -72,15 +84,12 @@ export function BackgroundBeamsDemo() {
                             <div className="flex gap-2 items-center">
                                 <button
                                     onClick={handleSend}
-                                    disabled={loading}
-                                    className={`bg-neutral-700 hover:bg-neutral-600 text-white p-2 rounded-xl w-10 h-10 flex items-center justify-center ${loading ? "opacity-50 cursor-not-allowed" : ""
-                                        }`}
+                                    className={`bg-neutral-700 hover:bg-neutral-600 text-white p-2 rounded-xl w-10 h-10 flex items-center justify-center `
+                                        }
                                 >
-                                    {loading ? (
-                                        <LoaderCircle className=" animate-spin" /> // or use a spinner
-                                    ) : (
+                                     
                                         <IoSend size={20} />
-                                    )}
+                                    
                                 </button>
 
                             </div>

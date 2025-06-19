@@ -77,3 +77,48 @@ import config from '../config/config';
     }
   };
   
+
+
+
+export const getDeployments = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+    const { id } = req.params;
+
+    // 1. Check user authentication
+    if (!user || typeof user !== "object" || !("userId" in user)) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    // 2. Validate project ID
+    if (!id) {
+      res.status(400).json({ success: false, error: "Project ID is required" });
+      return;
+    }
+
+    // 3. Fetch deployments
+    const deployments = await DeployModel.find({
+      projectId: id,
+      createdBy: (user as { userId: string }).userId,
+    });
+
+    // 4. Return result
+    res.status(200).json({
+      success: true,
+      deployments: deployments.map((deployment) => ({
+        id: deployment._id,
+        projectname: deployment.projectname,
+        url: deployment.url,
+        version: deployment.version,
+        createdAt: deployment.createdAt,
+        deploymentStatus: deployment.deploymentStatus,
+      })),
+    });
+    return;
+  } catch (error) {
+    console.error("Error fetching deployments:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+    return;
+  }
+};

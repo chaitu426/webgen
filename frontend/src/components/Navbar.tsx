@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import Avatar from "boring-avatars";
 
 export default function TopNavbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated); // this will re-render on state change
+    const logout = useAuthStore((state) => state.logout);
+    const user = useAuthStore((state) => state.user);
+
+
 
     const navItems = [
         { label: "Features", href: "#features" },
@@ -19,10 +27,10 @@ export default function TopNavbar() {
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
                 {/* Logo */}
                 <Link to="/">
-                <div className="flex items-center gap-2">
-                    <img src="https://assets.aceternity.com/logo-dark.png" alt="Logo" className="h-8 w-8" />
-                    <span className="font-semibold text-lg text-black dark:text-white font-jetbrains">WebGen</span>
-                </div>
+                    <div className="flex items-center gap-2">
+                        <img src="https://assets.aceternity.com/logo-dark.png" alt="Logo" className="h-8 w-8" />
+                        <span className="font-semibold text-lg text-black dark:text-white font-jetbrains">WebGen</span>
+                    </div>
                 </Link>
 
                 {/* Desktop Nav */}
@@ -36,36 +44,75 @@ export default function TopNavbar() {
                             {item.label}
                         </a>
                     ))}
-                    <Link
-                       to="/signup"
-                    >
-                    <button className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block">
-                        <span className="absolute inset-0 overflow-hidden rounded-full">
-                            <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                        </span>
-                        <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-                            <span>
-                                Get Started
-                            </span>
-                            <svg
-                                fill="none"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                width="16"
-                                xmlns="http://www.w3.org/2000/svg"
+                    {isAuthenticated ? (
+                        <div className="relative inline-flex">
+                            <button
+                                onClick={() => setOpen((prev) => !prev)}
+                                className=" inline-flex items-center font-medium rounded-full bg-transparent  hover:bg-neutral-900 focus:outline-hidden"
                             >
-                                <path
-                                    d="M10.75 8.75L14.25 12L10.75 15.25"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="1.5"
-                                />
-                            </svg>
+                                <Avatar name={user?.user.username} colors={["#0a0310", "#49007e", "#ff005b", "#ff7d10", "#ffb238"]} variant="beam"  size={35}/>
+                                
+                                
+                            </button>
+
+                            {open && (
+                                <div className="absolute right-0 mt-12 min-w-52 bg-[#1a1a1a] p-4 border border-zinc-600 text-white shadow-xl rounded-xl z-50">
+                                <div className="space-y-1">
+                                  <div className="px-3 py-2 rounded-lg hover:bg-neutral-900 transition-colors">
+                                    <p className="font-semibold text-sm">{user?.user.username}</p>
+                                    <p className="text-xs text-neutral-400">{user?.user.email}</p>
+                                  </div>
+                              
+                                  <Link
+                                    to="/profile"
+                                    className="block px-3 py-2 rounded-lg text-sm text-white hover:bg-neutral-900 transition-colors"
+                                  >
+                                    Profile
+                                  </Link>
+                              
+                                  <button
+                                    onClick={logout}
+                                    className="w-full text-left px-3 py-2 rounded-lg text-sm text-white hover:bg-neutral-900 transition-colors"
+                                  >
+                                    Logout
+                                  </button>
+                                </div>
+                              </div>
+                              
+                            )}
                         </div>
-                        <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
-                    </button>
-                    </Link>
+                    ) : (
+                        <Link
+                            to="/signup"
+                        >
+                            <button className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block">
+                                <span className="absolute inset-0 overflow-hidden rounded-full">
+                                    <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                                </span>
+                                <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
+                                    <span>
+                                        Get Started
+                                    </span>
+                                    <svg
+                                        fill="none"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        width="16"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M10.75 8.75L14.25 12L10.75 15.25"
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="1.5"
+                                        />
+                                    </svg>
+                                </div>
+                                <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+                            </button>
+                        </Link>
+                    )}
                 </div>
 
                 {/* Mobile Toggle */}

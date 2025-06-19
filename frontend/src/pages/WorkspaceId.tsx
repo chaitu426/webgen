@@ -9,6 +9,7 @@ import {
   Paperclip,
   MoveUpRight,
   Globe,
+  Link2,
 } from "lucide-react";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import { useWorkStore } from "../store/workStore";
@@ -17,20 +18,21 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Loader from "../components/ui/Loader";
 import { toast } from "react-toastify";
+import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
 import Avatar from "boring-avatars";
+import { useAuthStore } from "../store/authStore";
 import Editor from "@monaco-editor/react";
 
 
-export default function WebgenWorkspace() {
+export default function WebgenWorkspaceId() {
   const [messages, setMessages] = useState<
     { type: string; content: string; hasCode?: boolean }[]
   >([
     {
       type: "system",
       content:
-        "Hey! I'm WebGen AI. Tell me what kind of website you want to build, and I'll create it for you instantly.",
+        "Hey! I'm WebGen AI. welcome to your project what enhancemant you want to do ?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -38,11 +40,15 @@ export default function WebgenWorkspace() {
   const [activeTab, setActiveTab] = useState("preview");
   const [loading, setLoading] = useState(true);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-  const { pendingPrompt, Generate, work, updateWork } = useWorkStore();
+  const { GetProject, work, updateWork } = useWorkStore();
   const [isDeloying, setIsDeploying] = useState(false);
+  const [opend, setOpend] = useState(false);
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
+  const GetDeployment = useWorkStore((state) => state.GetDeployment);
+  const url = useWorkStore((state) => state.url);
   const [open, setOpen] = useState(false);
+  const params = useParams();
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -76,7 +82,7 @@ export default function WebgenWorkspace() {
   
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/aigen/enhance/${work?.data._id}`,
+        `${import.meta.env.VITE_BASE_URL}/api/aigen/enhance/${params.id}`,
         { Prompt: input },
         {
           headers: {
@@ -93,7 +99,7 @@ export default function WebgenWorkspace() {
         ...prev,
         {
           type: "ai",
-          content: `Done! Your code is ready. Click on **Preview** to see your creation or switch to **Code** to explore and tweak the HTML.`,
+          content: `🚀 Done! Your code is ready. Click on **Preview** to see your creation or switch to **Code** to explore and tweak the HTML.`,
           hasCode: true,
         },
       ]);
@@ -104,7 +110,7 @@ export default function WebgenWorkspace() {
         ...prev,
         {
           type: "ai",
-          content: `Hmm... something went wrong on my end. Please try again in a moment.`,
+          content: `⚠️ Hmm... something went wrong on my end. Please try again in a moment.`,
         },
       ]);
     }
@@ -114,21 +120,31 @@ export default function WebgenWorkspace() {
   
 
   useEffect(() => {
-    const loadWork = async () => {
-      if (pendingPrompt) {
-        setMessages([{ type: "user", content: pendingPrompt }]);
-        await Generate(pendingPrompt);
+
+    const getproject = async () => {
+
+      if (params.id) {
+        await GetProject(params.id);
+
         setActiveTab("preview");
+        setLoading(false)
+        await GetDeployment(params.id);
+
+      } else {
+        console.error("Project ID is undefined");
       }
-      setLoading(false);
-    };
-    loadWork();
-  }, [pendingPrompt, Generate]);
+
+    }
+
+    getproject();
+
+
+  }, [GetProject, params.id, GetDeployment]);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(work?.code || "");
-      toast.success("Code copied to clipboard!");
+      alert("Code copied to clipboard!");
     } catch (err) {
       console.error("Failed to copy:", err);
     }
@@ -154,7 +170,7 @@ export default function WebgenWorkspace() {
   
     try {
       const responce = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/deploy/vercel/${work?.data._id}`,
+        `${import.meta.env.VITE_BASE_URL}/api/deploy/vercel/${params.id}`,
         { projectname: "webgen-project" },
         {
           headers: {
@@ -217,10 +233,10 @@ export default function WebgenWorkspace() {
             >
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 ${msg.type === "user"
-                    ? "bg-neutral-700"
-                    : msg.type === "system"
-                      ? "bg-neutral-800/60 border border-neutral-700/50"
-                      : "bg-gradient-to-br from-blue-900 to-neutral-800/80 border border-blue-700/30 shadow-sm shadow-blue-500/20"
+                  ? "bg-neutral-700"
+                  : msg.type === "system"
+                    ? "bg-neutral-800/60 border border-neutral-700/50"
+                    : "bg-gradient-to-br from-blue-900 to-neutral-800/80 border border-blue-700/30 shadow-sm shadow-blue-500/20"
                   }`}
               >
                 <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
@@ -294,8 +310,8 @@ export default function WebgenWorkspace() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === tab
-                    ? "bg-neutral-700 text-white shadow-sm"
-                    : "text-neutral-400 hover:text-neutral-200"
+                  ? "bg-neutral-700 text-white shadow-sm"
+                  : "text-neutral-400 hover:text-neutral-200"
                   }`}
               >
                 {tab === "preview" ? <Eye className="h-4 w-4" /> : <Code className="h-4 w-4" />}
@@ -304,6 +320,52 @@ export default function WebgenWorkspace() {
             ))}
           </div>
           <div className="flex items-center space-x-2">
+
+
+            <div className="relative inline-flex">
+              <button
+                onClick={() => setOpend((prev) => !prev)}
+                className=" inline-flex items-center font-medium rounded-full bg-transparent  hover:bg-neutral-900 focus:outline-hidden"
+              >
+                <Link2 size={20} />
+
+              </button>
+
+              {opend && (
+                <div className="absolute right-0 mt-12 min-w-52 bg-[#1a1a1a] p-4 border border-zinc-600 text-white shadow-xl rounded-xl z-50">
+                  <div className="space-y-1">
+                    {url?.deployments && url.deployments.length > 0 ? (
+                      <div className="space-y-2">
+                        {url.deployments.map((deployment, index) => (
+                          <a
+                            key={index}
+                            href={`https://${deployment.url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-between bg-neutral-900 hover:bg-neutral-800 transition-all border border-neutral-700/60 px-4 py-2 rounded-lg shadow-sm group"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-blue-400 group-hover:underline text-sm truncate max-w-[220px]">
+                                {deployment.url}
+                              </span>
+                            </div>
+                            <span className="text-xs text-neutral-500 group-hover:text-white bg-neutral-800 px-2 py-0.5 rounded-md">
+                              v{deployment.version}
+                            </span>
+                          </a>
+                        ))}
+                      </div>
+
+                    ) : (
+                      <span className="text-neutral-400 text-sm">No deployments yet</span>
+                    )}
+
+                  </div>
+                </div>
+
+              )}
+            </div>
+
 
             <button
               onClick={handleDeploy}
@@ -334,7 +396,6 @@ export default function WebgenWorkspace() {
             >
               <Download size={20} />
             </button>
-
             <div className="relative inline-flex">
               <button
                 onClick={() => setOpen((prev) => !prev)}
@@ -359,6 +420,7 @@ export default function WebgenWorkspace() {
                     >
                       Home
                     </Link>
+
                     <Link
                       to="/profile"
                       className="block px-3 py-2 rounded-lg text-sm text-white hover:bg-neutral-900 transition-colors"
@@ -437,6 +499,7 @@ export default function WebgenWorkspace() {
                 </div>
               </div>
             </div>
+
           )}
         </div>
       </div>

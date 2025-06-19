@@ -10,6 +10,9 @@ const aigenSchema = new mongoose.Schema({
         minlength: 3,
         maxlength: 50
          },
+    prompt:{
+      type: String,
+    },
     code: { 
         type: String,
         required: true
@@ -22,9 +25,11 @@ const aigenSchema = new mongoose.Schema({
         type: String,
         trim: true
          },
+    
     refinementHistory: [
       {
         code: String,
+        prompt: String,
         version: String,
         refinedAt: { type: Date, default: Date.now }
       }

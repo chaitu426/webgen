@@ -1,16 +1,47 @@
-import React from "react";
+import React, {useState} from "react";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { cn } from "../../lib/utils";
 import { Link } from "react-router-dom";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import { TextGenerateEffect } from "../components/ui/textGeneration";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 
 export function Login() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Logging in...");
+    try {
+      const response =  await axios.post(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
+        email,
+        password
+      });
+      
+      const token = response.data.token;
+      localStorage.setItem("token", token); // Save token
+      toast.success("Login successful!");
+
+      login(token); 
+      navigate("/");
+      
+    } catch (error) {
+      console.error("Error during login:", error);
+      if (error instanceof Error) {
+        toast.error(`Login failed: ${error.message || "Please try again later."}`);
+      } else {
+        toast.error("Login failed. Please try again later.");
+      }
+      
+    }
   };
 
   return (
@@ -28,12 +59,12 @@ export function Login() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <LabelInputContainer>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" placeholder="you@example.com" type="email" />
+            <Input id="email" placeholder="you@example.com" type="email" onChange={(e) => setEmail(e.target.value)} />
           </LabelInputContainer>
 
           <LabelInputContainer>
             <Label htmlFor="password">Password</Label>
-            <Input id="password" placeholder="••••••••" type="password" />
+            <Input id="password" placeholder="••••••••" type="password" onChange={(e) => setPassword(e.target.value)} />
           </LabelInputContainer>
 
           <button

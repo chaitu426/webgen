@@ -10,7 +10,7 @@ UserRouter.post("/register", register);
 
 UserRouter.post("/login", login);
 
-UserRouter.get("/profile/:userId", AuthMiddleware , getProfile);
+UserRouter.get("/profile/", AuthMiddleware , getProfile);
 
 
 

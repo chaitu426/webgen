@@ -4,8 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 import config from "../config/config"
 import AigenModel from '../models/Aigen';
-import axios from 'axios';
-
+import DeployModel from '../models/deploy';
 
 
 export const register = async (req: Request, res: Response) => {
@@ -100,7 +99,15 @@ export const login = async (req: Request, res: Response) => {
 export const getProfile = async (req: Request, res: Response) => {
     try {
         // Get the user ID from the request parameters
-        const userId = req.params.userId;
+        //const userId = req.params.userId;
+        const getuser = req.user
+
+        if (!getuser || (typeof getuser !== "object" || !("userId" in getuser))) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const userId = (getuser as { userId: string }).userId;
 
         // Find the user by ID
         const user = await User.findById(userId).select('-password'); // Exclude password from the response
@@ -108,12 +115,21 @@ export const getProfile = async (req: Request, res: Response) => {
         const generations = await AigenModel.find({
             createdBy: userId
         })
+
+        const deployments = await DeployModel.find({
+            createdBy: userId,
+            projectId: generations.map(gen => gen._id)
+        });
+    
+
         // If user not found, return an error
         if (!user) {
             res.status(404).json({ message: "User not found" });
         } else {
-            res.status(200).json({ user, projects:generations});
+            res.status(200).json({ user, projects:generations, deployments: deployments});
         };
+
+        
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
     };

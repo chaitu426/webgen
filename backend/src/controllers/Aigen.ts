@@ -28,6 +28,7 @@ export const Generate = async (req: Request, res: Response) => {
         // Save generated data to the database
         const newAigen = await AigenModel.create({
             modelName: "AigenModel",
+            prompt:prompt,
             code: code,
             description: explanation,
             version: "1.0",
@@ -38,7 +39,8 @@ export const Generate = async (req: Request, res: Response) => {
         res.status(201).json({
             message: "Generated and saved successfully",
             refined_prompt:"null",
-            explanation,
+            prompt,
+            description:explanation,
             code,
             data: newAigen
         });
@@ -54,9 +56,9 @@ export const Generate = async (req: Request, res: Response) => {
 export const Enhance = async (req: Request, res: Response) => {
     try {
         const Id = req.params.id;
-        const { enhancePrompt } = req.body;
-        if (!enhancePrompt) {
-            res.status(400).json({ message: "Enhance prompt is required" });
+        const { Prompt } = req.body;
+        if (!Prompt) {
+            res.status(400).json({ message: "prompt is required" });
             return;
         }
         const user = req.user;
@@ -81,7 +83,7 @@ export const Enhance = async (req: Request, res: Response) => {
         Enhance the following code based on the instruction below:
 
         ---Instruction---
-        ${enhancePrompt}
+        ${Prompt}
 
         ---Previous Code---
         ${existingAigen.code}
@@ -94,7 +96,9 @@ export const Enhance = async (req: Request, res: Response) => {
         // Append current version to refinement history
         const refinementHistory = existingAigen.refinementHistory || [];
         refinementHistory.push({
+
             code: existingAigen.code,
+            prompt: existingAigen.prompt,
             version: existingAigen.version,
             refinedAt: new Date(),
         });
@@ -104,6 +108,7 @@ export const Enhance = async (req: Request, res: Response) => {
              Id
             ,{
             code:code,
+            prompt:Prompt,
             description: explanation,
             version: (parseFloat(existingAigen.version) + 0.1).toFixed(1),
             refinementHistory,
@@ -145,7 +150,10 @@ export const project = async (req: Request, res: Response) => {
         }
         res.status(200).json({
             message: "Project retrieved successfully",
-            data: project
+            code: project?.code || null,
+            prompt: project?.prompt || null,
+            version: project?.version || null,
+
         });
 
     } catch (error) {
