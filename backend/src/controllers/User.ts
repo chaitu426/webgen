@@ -14,8 +14,10 @@ export const register = async (req: Request, res: Response) => {
         // Validate the input
         if (!username || !email || !password) {
             res.status(400).json({ message: "Missing required fields" });
+            return;
         } else if (password.length < 6) {
             res.status(400).json({ message: "Password must be at least 6 characters long" });
+            return;
         }
 
 
@@ -23,6 +25,7 @@ export const register = async (req: Request, res: Response) => {
         const user = await User.findOne({ email });
         if (user) {
             res.status(400).json({ message: "User already exists" });
+            return;
         }
 
 
@@ -30,6 +33,7 @@ export const register = async (req: Request, res: Response) => {
         const hashed_password = await bcrypt.hash(password, 10);
         if (!hashed_password) {
             res.status(500).json({ message: "error in hashing" });
+            return;
         }
 
         // Create a new user
@@ -42,6 +46,7 @@ export const register = async (req: Request, res: Response) => {
         // If user creation failed
         if (!newUser) {
             res.status(500).json({ message: "User registration failed" });
+            return;
         } else {
 
             // Generate a JWT token
@@ -51,10 +56,12 @@ export const register = async (req: Request, res: Response) => {
                 { expiresIn: '1d' }
             );
             res.status(201).json({ message: "User registered successfully", user: newUser, token: token });
+            return;
         }
 
     } catch (error) {
         res.status(500).json({ message: "Internal server error" });
+        return;
     }
 };
 
