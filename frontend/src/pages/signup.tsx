@@ -39,7 +39,6 @@ export function Signup() {
       navigate("/");
 
     } catch (error) {
-      console.error("Error during signup:", error);
       if (error instanceof Error) {
         toast.error(`Signup failed: ${error || "Please try again later."}`);
       } else {

@@ -16,7 +16,8 @@ const app = express();
 // })
 
 app.use(cors({
-	origin: "https://webgen-three.vercel.app", 
+	origin: ["https://webgen-three.vercel.app", "http://localhost:3000"],
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
 	credentials: true, 
 }));
 app.use(express.json());

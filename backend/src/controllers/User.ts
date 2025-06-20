@@ -29,7 +29,7 @@ export const register = async (req: Request, res: Response) => {
         // Hash the password
         const hashed_password = await bcrypt.hash(password, 10);
         if (!hashed_password) {
-            res.status(500).json({ message: "Internal server error" });
+            res.status(500).json({ message: "error in hashing" });
         }
 
         // Create a new user
