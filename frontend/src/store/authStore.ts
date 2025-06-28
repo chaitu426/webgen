@@ -1,5 +1,6 @@
-import axios from 'axios';
+//import axios from 'axios';
 import { create } from 'zustand';
+import setu from "setu.js"
 
 
 
@@ -55,12 +56,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
 
   setUser: (user) => set({ user, isAuthenticated: true }),
-
+  
 
   fetchProfile: async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/profile`, {
+      const res = await setu.get(`${import.meta.env.VITE_BASE_URL}/api/user/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

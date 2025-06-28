@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import { useWorkStore } from "../store/workStore";
-import axios from "axios";
+//import axios from "axios";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Loader from "../components/ui/Loader";
@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import Avatar from "boring-avatars";
 import { useAuthStore } from "../store/authStore";
 import Editor from "@monaco-editor/react";
+import setu from "setu.js";
 
 
 export default function WebgenWorkspaceId() {
@@ -79,18 +80,17 @@ export default function WebgenWorkspaceId() {
       hasCode: false,
     };
     setMessages((prev) => [...prev, aiIntroMessage]);
+
+    const config = {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json", },
+      timeout: 5000,
+      retries: 3,
+      body: {Prompt: input},
+    };
   
     try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/aigen/enhance/${params.id}`,
-        { Prompt: input },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await setu.put(
+        `${import.meta.env.VITE_BASE_URL}/api/aigen/enhance/${params.id}`, config);
   
       const result = response.data;
       updateWork(result);
@@ -169,15 +169,14 @@ export default function WebgenWorkspaceId() {
     const token = localStorage.getItem("token");
   
     try {
-      const responce = await axios.post(
+      const responce = await setu.post(
         `${import.meta.env.VITE_BASE_URL}/api/deploy/vercel/${params.id}`,
-        { projectname: "webgen-project" },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { body:{projectname: "webgen-project"},
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+       }
+       }
       );
   
       const deployUri = responce.data.url;

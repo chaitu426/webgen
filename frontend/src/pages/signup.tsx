@@ -5,10 +5,11 @@ import { cn } from "../../lib/utils";
 import { Link } from "react-router-dom";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import { TextGenerateEffect } from "../components/ui/textGeneration";
-import axios from "axios";
+//import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { useAuthStore } from "../store/authStore";
+import setu from "setu.js";
 
 
 export function Signup() {
@@ -25,10 +26,12 @@ export function Signup() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${baseurl}/api/user/register`, {
-        username: name,
-        email,
-        password
+      const response = await setu.post(`${baseurl}/api/user/register`, {
+        body:{
+          username: name,
+          email,
+          password
+        }
       });
 
       const token = response.data.token;

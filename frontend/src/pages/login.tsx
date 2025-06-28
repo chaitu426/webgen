@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import { TextGenerateEffect } from "../components/ui/textGeneration";
 import { toast } from "react-toastify";
-import axios from "axios";
+ //import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import setu from "setu.js";
 
 
 export function Login() {
@@ -21,12 +22,18 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response =  await axios.post(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
-        email,
-        password
+      const response =  await setu.post(`${import.meta.env.VITE_BASE_URL}/api/user/logi`, {
+          body:{
+            email,
+            password
+          },
+          retry:2,       
+
       });
       
       const token = response.data.token;
+      console.log("Login successful, token:", token);
+      console.log("Response data:", response.status);
       localStorage.setItem("token", token); // Save token
       toast.success("Login successful!");
 
@@ -34,7 +41,7 @@ export function Login() {
       navigate("/");
       
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during login:", error );
       if (error instanceof Error) {
         toast.error(`Login failed: ${error.message || "Please try again later."}`);
       } else {

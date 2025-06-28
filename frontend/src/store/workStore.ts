@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "react-toastify";
+import setu from "setu.js";
 
 type Work = {
 
@@ -37,6 +38,7 @@ type Url = {
 };
 
 
+
 interface WorkState {
   work: Work | null;
   url: Url | null;
@@ -70,7 +72,7 @@ export const useWorkStore = create<WorkState>((set) => ({
   GetProject: async (projectId: string) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(
+      const response = await setu.get(
         `${import.meta.env.VITE_BASE_URL}/api/aigen/project/${projectId}`,
         {
           headers: {
@@ -89,7 +91,7 @@ export const useWorkStore = create<WorkState>((set) => ({
   GetAllProjects: async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(
+      const response = await setu.get(
         `${import.meta.env.VITE_BASE_URL}/api/aigen/projects`,
         {
           headers: {
@@ -104,20 +106,20 @@ export const useWorkStore = create<WorkState>((set) => ({
       console.error("GetAllProjects error", error);
     }
   },
-
+  
   Generate: async (prompt: string) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/aigen/generate`,
-        { prompt },
-        {
+      const response = await setu.post(
+        `${import.meta.env.VITE_BASE_URL}/api/aigen/generate`,{
+          body:{
+            prompt,
+          },
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           }
-        }
-      );
+        });
       set({ work: response.data });
     } catch (error) {
       toast.error("Failed to generate.");
@@ -128,7 +130,7 @@ export const useWorkStore = create<WorkState>((set) => ({
   GetDeployment: async (projectId: string) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(
+      const response = await setu.get(
         `${import.meta.env.VITE_BASE_URL}/api/deploy/url/${projectId}`,
         {
           headers: {

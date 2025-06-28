@@ -7,8 +7,9 @@ import { useOutsideClick } from "../hooks/use-outside-click";
 import { FiExternalLink, FiCopy, FiDownload, FiEdit3 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+//import axios from "axios";
 import Avatar from "boring-avatars";
+import setu from "setu.js";
 
 interface Project {
   [x: string]: ReactNode;
@@ -47,7 +48,7 @@ const Profile: React.FC = () => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/profile`, {
+        const res = await setu.get(`${import.meta.env.VITE_BASE_URL}/api/user/profile`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,

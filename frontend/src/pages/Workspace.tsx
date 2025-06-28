@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import { useWorkStore } from "../store/workStore";
-import axios from "axios";
+//import axios from "axios";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import Loader from "../components/ui/Loader";
@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import Avatar from "boring-avatars";
 import Editor from "@monaco-editor/react";
+import setu from "setu.js";
 
 
 export default function WebgenWorkspace() {
@@ -75,14 +76,16 @@ export default function WebgenWorkspace() {
     setMessages((prev) => [...prev, aiIntroMessage]);
   
     try {
-      const response = await axios.put(
+      const response = await setu.put(
         `${import.meta.env.VITE_BASE_URL}/api/aigen/enhance/${work?.data._id}`,
-        { Prompt: input },
         {
+          body: {
+            Prompt: input,
+          },
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+         }
         }
       );
   
@@ -153,15 +156,14 @@ export default function WebgenWorkspace() {
     const token = localStorage.getItem("token");
   
     try {
-      const responce = await axios.post(
+      const responce = await setu.post(
         `${import.meta.env.VITE_BASE_URL}/api/deploy/vercel/${work?.data._id}`,
-        { projectname: "webgen-project" },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { body:{projectname: "webgen-project"},
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+       }
+       }
       );
   
       const deployUri = responce.data.url;
