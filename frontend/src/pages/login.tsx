@@ -22,7 +22,7 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response =  await setu.post(`${import.meta.env.VITE_BASE_URL}/api/user/logi`, {
+      const response =  await setu.post(`${import.meta.env.VITE_BASE_URL}/api/user/login`, {
           body:{
             email,
             password
